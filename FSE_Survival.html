@@ -217,43 +217,6 @@ summary {
   print(table(df.sample$adopted))
   summary(df.sample[df.sample$adopted==1,]$start_interval)
   return(df.sample)
-}
-
-
-## Defining coxph model
-run_coxph_model &lt;- function(df.sample){
-  coxph_model &lt;- coxph(Surv(start_interval,
-                            end_interval,
-                            adopted == 1) ~
-                         # act_committers # replaced by act_undir_committers
-                       + log(n_commits+1)
-                       + log(n_watchers+1)
-                       + (other_badge &gt; 0)
-                       + log(all_popularity+1)
-                       #+ (comp_badge&gt;0)
-                       #+ log(act_pullers+1)
-                       + log(act_watchers+1)
-                       + log(act_undir_committers+1)
-                       #+ n_committers
-                       #+ tool_popularity # high VIF
-                       + log(depgraph+1)
-                       + log(depsim+1)
-                       + log(desc+1)
-                       #+ n_org #high VIF
-                       , data=df.sample)
-  
-  return(coxph_model)
-}
-
-## defining save_model
-save_model &lt;- function(coxph_model, badge){
-  sink(paste(&quot;FITS_FSE/&quot;,&quot;FIT_SA_&quot;,toString(badge),&quot;.txt&quot;, sep=&quot;&quot;))
-  print(summary(coxph_model))
-  print(anova(coxph_model))
-  print(vif(coxph_model))
-  sink()
-  save(coxph_model, file=paste('/data2/hemank/INPUT_SURVIVAL/FITS_FSE/FIT_',toString(badge),'_badge', sep=&quot;&quot;))
-  sink()
 }</code></pre>
 </div>
 <div id="getting-relevant-data-for-badges." class="section level2">
@@ -300,49 +263,49 @@ summary(coxph_david)</code></pre>
 ##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
 ##     log(depsim + 1) + log(desc + 1), data = df_david)
 ## 
-##   n= 596312, number of events= 9798 
+##   n= 601375, number of events= 9798 
 ## 
 ##                                    coef exp(coef)  se(coef)       z
-## log(n_commits + 1)             0.339940  1.404863  0.009546  35.610
-## log(n_watchers + 1)           -0.125586  0.881980  0.008920 -14.080
-## other_badge &gt; 0TRUE            0.969529  2.636702  0.026056  37.209
-## log(all_popularity + 1)        0.017753  1.017911  0.011154   1.592
-## comp_badge &gt; 0TRUE            -2.455272  0.085840  0.707228  -3.472
-## log(act_watchers + 1)         -0.025623  0.974703  0.008359  -3.065
-## log(act_undir_committers + 1)  0.517031  1.677042  0.008423  61.385
-## log(depgraph + 1)              0.717146  2.048579  0.024790  28.928
-## log(depsim + 1)                0.074228  1.077052  0.038648   1.921
-## log(desc + 1)                  0.620743  1.860309  0.036245  17.126
+## log(n_commits + 1)             0.356935  1.428943  0.009676  36.887
+## log(n_watchers + 1)           -0.143453  0.866362  0.008927 -16.070
+## other_badge &gt; 0TRUE            0.951341  2.589180  0.026071  36.490
+## log(all_popularity + 1)        0.029976  1.030430  0.011285   2.656
+## comp_badge &gt; 0TRUE            -2.547311  0.078292  0.707242  -3.602
+## log(act_watchers + 1)         -0.027910  0.972476  0.008337  -3.348
+## log(act_undir_committers + 1)  0.517301  1.677495  0.008568  60.378
+## log(depgraph + 1)              0.726453  2.067733  0.025149  28.886
+## log(depsim + 1)                0.099089  1.104165  0.038684   2.562
+## log(desc + 1)                  0.578714  1.783743  0.037794  15.312
 ##                               Pr(&gt;|z|)    
 ## log(n_commits + 1)             &lt; 2e-16 ***
 ## log(n_watchers + 1)            &lt; 2e-16 ***
 ## other_badge &gt; 0TRUE            &lt; 2e-16 ***
-## log(all_popularity + 1)       0.111487    
-## comp_badge &gt; 0TRUE            0.000517 ***
-## log(act_watchers + 1)         0.002175 ** 
+## log(all_popularity + 1)       0.007903 ** 
+## comp_badge &gt; 0TRUE            0.000316 ***
+## log(act_watchers + 1)         0.000814 ***
 ## log(act_undir_committers + 1)  &lt; 2e-16 ***
 ## log(depgraph + 1)              &lt; 2e-16 ***
-## log(depsim + 1)               0.054782 .  
+## log(depsim + 1)               0.010422 *  
 ## log(desc + 1)                  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)              1.40486     0.7118   1.37882    1.4314
-## log(n_watchers + 1)             0.88198     1.1338   0.86670    0.8975
-## other_badge &gt; 0TRUE             2.63670     0.3793   2.50543    2.7749
-## log(all_popularity + 1)         1.01791     0.9824   0.99590    1.0404
-## comp_badge &gt; 0TRUE              0.08584    11.6496   0.02146    0.3433
-## log(act_watchers + 1)           0.97470     1.0260   0.95886    0.9908
-## log(act_undir_committers + 1)   1.67704     0.5963   1.64958    1.7050
-## log(depgraph + 1)               2.04858     0.4881   1.95142    2.1506
-## log(depsim + 1)                 1.07705     0.9285   0.99848    1.1618
-## log(desc + 1)                   1.86031     0.5375   1.73274    1.9973
+## log(n_commits + 1)              1.42894     0.6998   1.40210    1.4563
+## log(n_watchers + 1)             0.86636     1.1543   0.85134    0.8817
+## other_badge &gt; 0TRUE             2.58918     0.3862   2.46020    2.7249
+## log(all_popularity + 1)         1.03043     0.9705   1.00789    1.0535
+## comp_badge &gt; 0TRUE              0.07829    12.7727   0.01958    0.3131
+## log(act_watchers + 1)           0.97248     1.0283   0.95672    0.9885
+## log(act_undir_committers + 1)   1.67749     0.5961   1.64956    1.7059
+## log(depgraph + 1)               2.06773     0.4836   1.96828    2.1722
+## log(depsim + 1)                 1.10416     0.9057   1.02354    1.1911
+## log(desc + 1)                   1.78374     0.5606   1.65639    1.9209
 ## 
 ## Concordance= 0.782  (se = 0.003 )
-## Likelihood ratio test= 10025  on 10 df,   p=&lt;2e-16
-## Wald test            = 12949  on 10 df,   p=&lt;2e-16
-## Score (logrank) test = 15417  on 10 df,   p=&lt;2e-16</code></pre>
+## Likelihood ratio test= 10114  on 10 df,   p=&lt;2e-16
+## Wald test            = 12930  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 15448  on 10 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_david)
 #anova(coxph_david)</code></pre>
 </div>
@@ -370,46 +333,46 @@ summary(coxph_bithound)</code></pre>
 ##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
 ##     log(desc + 1), data = df_bithound)
 ## 
-##   n= 49883, number of events= 744 
+##   n= 50714, number of events= 744 
 ## 
 ##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
-## log(n_commits + 1)             0.45971   1.58361  0.03536 13.002  &lt; 2e-16
-## log(n_watchers + 1)           -0.05129   0.95000  0.02933 -1.749   0.0804
-## other_badge &gt; 0TRUE            0.81315   2.25500  0.10335  7.868 3.61e-15
-## log(all_popularity + 1)        0.88531   2.42373  0.08319 10.641  &lt; 2e-16
-## comp_badge &gt; 0TRUE            -0.09553   0.90889  0.44961 -0.212   0.8317
-## log(act_watchers + 1)         -0.12013   0.88680  0.06366 -1.887   0.0591
-## log(act_undir_committers + 1)  1.08405   2.95663  0.05097 21.266  &lt; 2e-16
-## log(depgraph + 1)              0.68308   1.97997  0.16756  4.077 4.57e-05
-## log(desc + 1)                  1.59277   4.91734  0.25931  6.142 8.13e-10
+## log(n_commits + 1)             0.44913   1.56695  0.03466 12.958  &lt; 2e-16
+## log(n_watchers + 1)           -0.03902   0.96173  0.03016 -1.294   0.1958
+## other_badge &gt; 0TRUE            0.79572   2.21604  0.10397  7.654 1.95e-14
+## log(all_popularity + 1)        0.92106   2.51196  0.08319 11.072  &lt; 2e-16
+## comp_badge &gt; 0TRUE             0.96918   2.63578  0.44992  2.154   0.0312
+## log(act_watchers + 1)         -0.03762   0.96308  0.06656 -0.565   0.5719
+## log(act_undir_committers + 1)  1.18160   3.25959  0.05008 23.594  &lt; 2e-16
+## log(depgraph + 1)              0.23797   1.26867  0.16640  1.430   0.1527
+## log(desc + 1)                  1.44193   4.22883  0.25973  5.552 2.83e-08
 ##                                  
 ## log(n_commits + 1)            ***
-## log(n_watchers + 1)           .  
+## log(n_watchers + 1)              
 ## other_badge &gt; 0TRUE           ***
 ## log(all_popularity + 1)       ***
-## comp_badge &gt; 0TRUE               
-## log(act_watchers + 1)         .  
+## comp_badge &gt; 0TRUE            *  
+## log(act_watchers + 1)            
 ## log(act_undir_committers + 1) ***
-## log(depgraph + 1)             ***
+## log(depgraph + 1)                
 ## log(desc + 1)                 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.5836     0.6315    1.4776     1.697
-## log(n_watchers + 1)              0.9500     1.0526    0.8969     1.006
-## other_badge &gt; 0TRUE              2.2550     0.4435    1.8415     2.761
-## log(all_popularity + 1)          2.4237     0.4126    2.0591     2.853
-## comp_badge &gt; 0TRUE               0.9089     1.1002    0.3765     2.194
-## log(act_watchers + 1)            0.8868     1.1276    0.7828     1.005
-## log(act_undir_committers + 1)    2.9566     0.3382    2.6755     3.267
-## log(depgraph + 1)                1.9800     0.5051    1.4257     2.750
-## log(desc + 1)                    4.9173     0.2034    2.9581     8.174
+## log(n_commits + 1)               1.5669     0.6382    1.4640     1.677
+## log(n_watchers + 1)              0.9617     1.0398    0.9065     1.020
+## other_badge &gt; 0TRUE              2.2160     0.4513    1.8075     2.717
+## log(all_popularity + 1)          2.5120     0.3981    2.1340     2.957
+## comp_badge &gt; 0TRUE               2.6358     0.3794    1.0913     6.366
+## log(act_watchers + 1)            0.9631     1.0383    0.8453     1.097
+## log(act_undir_committers + 1)    3.2596     0.3068    2.9548     3.596
+## log(depgraph + 1)                1.2687     0.7882    0.9156     1.758
+## log(desc + 1)                    4.2288     0.2365    2.5418     7.036
 ## 
-## Concordance= 0.823  (se = 0.009 )
-## Likelihood ratio test= 1264  on 9 df,   p=&lt;2e-16
-## Wald test            = 1678  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 3647  on 9 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.825  (se = 0.009 )
+## Likelihood ratio test= 1288  on 9 df,   p=&lt;2e-16
+## Wald test            = 1661  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 3363  on 9 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_bithound)
 #anova(coxph_bithound)</code></pre>
 </div>
@@ -437,18 +400,18 @@ summary(coxph_gemnasium)</code></pre>
 ##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
 ##     data = df_gemnasium)
 ## 
-##   n= 79191, number of events= 1240 
+##   n= 78123, number of events= 1240 
 ## 
 ##                                   coef exp(coef) se(coef)       z Pr(&gt;|z|)
-## log(n_commits + 1)             0.35770   1.43004  0.02677  13.362  &lt; 2e-16
-## log(n_watchers + 1)           -0.12174   0.88538  0.02604  -4.675 2.94e-06
-## other_badge &gt; 0TRUE            1.16272   3.19861  0.07478  15.549  &lt; 2e-16
-## log(all_popularity + 1)       -0.23782   0.78835  0.02048 -11.613  &lt; 2e-16
-## log(act_watchers + 1)         -0.03180   0.96870  0.03508  -0.907    0.365
-## log(act_undir_committers + 1)  0.81439   2.25781  0.02654  30.682  &lt; 2e-16
-## log(depgraph + 1)              0.90004   2.45971  0.09582   9.393  &lt; 2e-16
-## log(depsim + 1)               -0.40469   0.66719  0.36795  -1.100    0.271
-## log(desc + 1)                  1.06084   2.88880  0.15181   6.988 2.79e-12
+## log(n_commits + 1)             0.34827   1.41661  0.02629  13.249  &lt; 2e-16
+## log(n_watchers + 1)           -0.19186   0.82542  0.02758  -6.956 3.50e-12
+## other_badge &gt; 0TRUE            1.16363   3.20154  0.07503  15.508  &lt; 2e-16
+## log(all_popularity + 1)       -0.23300   0.79215  0.01933 -12.052  &lt; 2e-16
+## log(act_watchers + 1)         -0.04275   0.95815  0.03572  -1.197    0.231
+## log(act_undir_committers + 1)  0.79979   2.22507  0.02792  28.645  &lt; 2e-16
+## log(depgraph + 1)              0.91648   2.50046  0.09576   9.570  &lt; 2e-16
+## log(depsim + 1)               -0.24564   0.78220  0.34991  -0.702    0.483
+## log(desc + 1)                  0.91814   2.50462  0.13765   6.670 2.55e-11
 ##                                  
 ## log(n_commits + 1)            ***
 ## log(n_watchers + 1)           ***
@@ -463,20 +426,20 @@ summary(coxph_gemnasium)</code></pre>
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.4300     0.6993    1.3569    1.5071
-## log(n_watchers + 1)              0.8854     1.1295    0.8413    0.9317
-## other_badge &gt; 0TRUE              3.1986     0.3126    2.7626    3.7035
-## log(all_popularity + 1)          0.7883     1.2685    0.7573    0.8206
-## log(act_watchers + 1)            0.9687     1.0323    0.9043    1.0376
-## log(act_undir_committers + 1)    2.2578     0.4429    2.1434    2.3784
-## log(depgraph + 1)                2.4597     0.4066    2.0385    2.9679
-## log(depsim + 1)                  0.6672     1.4988    0.3244    1.3723
-## log(desc + 1)                    2.8888     0.3462    2.1453    3.8899
+## log(n_commits + 1)               1.4166     0.7059    1.3455    1.4915
+## log(n_watchers + 1)              0.8254     1.2115    0.7820    0.8713
+## other_badge &gt; 0TRUE              3.2015     0.3123    2.7637    3.7088
+## log(all_popularity + 1)          0.7922     1.2624    0.7627    0.8227
+## log(act_watchers + 1)            0.9582     1.0437    0.8934    1.0276
+## log(act_undir_committers + 1)    2.2251     0.4494    2.1066    2.3502
+## log(depgraph + 1)                2.5005     0.3999    2.0726    3.0167
+## log(depsim + 1)                  0.7822     1.2784    0.3940    1.5530
+## log(desc + 1)                    2.5046     0.3993    1.9124    3.2803
 ## 
-## Concordance= 0.804  (se = 0.008 )
-## Likelihood ratio test= 1753  on 9 df,   p=&lt;2e-16
-## Wald test            = 2601  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 4082  on 9 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.8  (se = 0.008 )
+## Likelihood ratio test= 1680  on 9 df,   p=&lt;2e-16
+## Wald test            = 2415  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 3682  on 9 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_gemnasium)
 #anova(coxph_gemnasium)</code></pre>
 </div>
@@ -504,26 +467,26 @@ summary(coxph_saucelabs)</code></pre>
 ##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
 ##     log(depsim + 1) + log(desc + 1), data = df_saucelabs)
 ## 
-##   n= 39263, number of events= 541 
+##   n= 37782, number of events= 541 
 ## 
 ##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
-## log(n_commits + 1)             0.48080   1.61737  0.03766 12.766  &lt; 2e-16
-## log(n_watchers + 1)           -0.02163   0.97860  0.02875 -0.752   0.4519
-## other_badge &gt; 0TRUE            1.08797   2.96825  0.12554  8.666  &lt; 2e-16
-## log(all_popularity + 1)       -0.07276   0.92982  0.04097 -1.776   0.0757
-## comp_badge &gt; 0TRUE             0.16100   1.17469  1.00395  0.160   0.8726
-## log(act_watchers + 1)          0.07157   1.07419  0.05055  1.416   0.1569
-## log(act_undir_committers + 1)  0.77469   2.16993  0.07445 10.406  &lt; 2e-16
-## log(depgraph + 1)              1.34457   3.83652  0.15877  8.468  &lt; 2e-16
-## log(depsim + 1)                0.33061   1.39182  1.05306  0.314   0.7536
-## log(desc + 1)                  2.49768  12.15424  0.52703  4.739 2.15e-06
+## log(n_commits + 1)             0.46141   1.58631  0.03630 12.710  &lt; 2e-16
+## log(n_watchers + 1)           -0.05694   0.94465  0.02967 -1.919   0.0550
+## other_badge &gt; 0TRUE            1.15798   3.18350  0.12405  9.335  &lt; 2e-16
+## log(all_popularity + 1)       -0.09382   0.91045  0.04041 -2.322   0.0202
+## comp_badge &gt; 0TRUE            -0.40582   0.66643  1.00496 -0.404   0.6863
+## log(act_watchers + 1)          0.09678   1.10162  0.05000  1.936   0.0529
+## log(act_undir_committers + 1)  0.83787   2.31143  0.07398 11.325  &lt; 2e-16
+## log(depgraph + 1)              1.41477   4.11554  0.15621  9.057  &lt; 2e-16
+## log(depsim + 1)                0.05929   1.06109  1.05479  0.056   0.9552
+## log(desc + 1)                  2.45045  11.59361  0.52873  4.635 3.58e-06
 ##                                  
 ## log(n_commits + 1)            ***
-## log(n_watchers + 1)              
+## log(n_watchers + 1)           .  
 ## other_badge &gt; 0TRUE           ***
-## log(all_popularity + 1)       .  
+## log(all_popularity + 1)       *  
 ## comp_badge &gt; 0TRUE               
-## log(act_watchers + 1)            
+## log(act_watchers + 1)         .  
 ## log(act_undir_committers + 1) ***
 ## log(depgraph + 1)             ***
 ## log(depsim + 1)                  
@@ -532,21 +495,21 @@ summary(coxph_saucelabs)</code></pre>
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.6174    0.61829    1.5023     1.741
-## log(n_watchers + 1)              0.9786    1.02186    0.9250     1.035
-## other_badge &gt; 0TRUE              2.9683    0.33690    2.3208     3.796
-## log(all_popularity + 1)          0.9298    1.07548    0.8581     1.008
-## comp_badge &gt; 0TRUE               1.1747    0.85129    0.1642     8.404
-## log(act_watchers + 1)            1.0742    0.93093    0.9729     1.186
-## log(act_undir_committers + 1)    2.1699    0.46085    1.8753     2.511
-## log(depgraph + 1)                3.8365    0.26065    2.8105     5.237
-## log(depsim + 1)                  1.3918    0.71848    0.1767    10.964
-## log(desc + 1)                   12.1542    0.08228    4.3263    34.146
+## log(n_commits + 1)               1.5863    0.63039   1.47736    1.7033
+## log(n_watchers + 1)              0.9446    1.05860   0.89127    1.0012
+## other_badge &gt; 0TRUE              3.1835    0.31412   2.49639    4.0597
+## log(all_popularity + 1)          0.9104    1.09836   0.84113    0.9855
+## comp_badge &gt; 0TRUE               0.6664    1.50053   0.09297    4.7772
+## log(act_watchers + 1)            1.1016    0.90775   0.99879    1.2150
+## log(act_undir_committers + 1)    2.3114    0.43263   1.99943    2.6721
+## log(depgraph + 1)                4.1155    0.24298   3.03013    5.5898
+## log(depsim + 1)                  1.0611    0.94243   0.13425    8.3867
+## log(desc + 1)                   11.5936    0.08625   4.11306   32.6793
 ## 
-## Concordance= 0.781  (se = 0.014 )
-## Likelihood ratio test= 648.5  on 10 df,   p=&lt;2e-16
-## Wald test            = 803.5  on 10 df,   p=&lt;2e-16
-## Score (logrank) test = 1015  on 10 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.787  (se = 0.013 )
+## Likelihood ratio test= 659.6  on 10 df,   p=&lt;2e-16
+## Wald test            = 837.9  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 1090  on 10 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_saucelabs)
 #anova(coxph_saucelabs)</code></pre>
 </div>
@@ -574,24 +537,24 @@ summary(coxph_slack)</code></pre>
 ##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
 ##     data = df_slack)
 ## 
-##   n= 34128, number of events= 445 
+##   n= 34915, number of events= 445 
 ## 
-##                                  coef exp(coef) se(coef)      z Pr(&gt;|z|)
-## log(n_commits + 1)            0.11295   1.11958  0.04450  2.538 0.011140
-## log(n_watchers + 1)           0.14871   1.16033  0.03001  4.956 7.21e-07
-## other_badge &gt; 0TRUE           0.83012   2.29359  0.16597  5.002 5.68e-07
-## log(all_popularity + 1)       0.85953   2.36205  0.13098  6.562 5.30e-11
-## log(act_watchers + 1)         0.28597   1.33105  0.05452  5.245 1.56e-07
-## log(act_undir_committers + 1) 0.91066   2.48595  0.03923 23.215  &lt; 2e-16
-## log(depgraph + 1)             0.48895   1.63061  0.13340  3.665 0.000247
-## log(depsim + 1)               0.10346   1.10901  0.15837  0.653 0.513555
-## log(desc + 1)                 0.13567   1.14531  0.08611  1.576 0.115123
+##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
+## log(n_commits + 1)             0.09216   1.09654  0.04431  2.080   0.0376
+## log(n_watchers + 1)            0.16723   1.18202  0.02983  5.607 2.06e-08
+## other_badge &gt; 0TRUE            0.83161   2.29701  0.16475  5.048 4.47e-07
+## log(all_popularity + 1)        0.91467   2.49596  0.13205  6.927 4.31e-12
+## log(act_watchers + 1)          0.12532   1.13351  0.05515  2.272   0.0231
+## log(act_undir_committers + 1)  0.94739   2.57897  0.04454 21.269  &lt; 2e-16
+## log(depgraph + 1)              0.54653   1.72725  0.13579  4.025 5.70e-05
+## log(depsim + 1)               -0.01005   0.99000  0.15883 -0.063   0.9495
+## log(desc + 1)                  0.07102   1.07360  0.08684  0.818   0.4135
 ##                                  
 ## log(n_commits + 1)            *  
 ## log(n_watchers + 1)           ***
 ## other_badge &gt; 0TRUE           ***
 ## log(all_popularity + 1)       ***
-## log(act_watchers + 1)         ***
+## log(act_watchers + 1)         *  
 ## log(act_undir_committers + 1) ***
 ## log(depgraph + 1)             ***
 ## log(depsim + 1)                  
@@ -600,20 +563,20 @@ summary(coxph_slack)</code></pre>
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)                1.120     0.8932    1.0261     1.222
-## log(n_watchers + 1)               1.160     0.8618    1.0941     1.231
-## other_badge &gt; 0TRUE               2.294     0.4360    1.6567     3.175
-## log(all_popularity + 1)           2.362     0.4234    1.8273     3.053
-## log(act_watchers + 1)             1.331     0.7513    1.1962     1.481
-## log(act_undir_committers + 1)     2.486     0.4023    2.3020     2.685
-## log(depgraph + 1)                 1.631     0.6133    1.2554     2.118
-## log(depsim + 1)                   1.109     0.9017    0.8131     1.513
-## log(desc + 1)                     1.145     0.8731    0.9674     1.356
+## log(n_commits + 1)                1.097     0.9120    1.0053     1.196
+## log(n_watchers + 1)               1.182     0.8460    1.1149     1.253
+## other_badge &gt; 0TRUE               2.297     0.4353    1.6631     3.172
+## log(all_popularity + 1)           2.496     0.4006    1.9268     3.233
+## log(act_watchers + 1)             1.134     0.8822    1.0174     1.263
+## log(act_undir_committers + 1)     2.579     0.3878    2.3634     2.814
+## log(depgraph + 1)                 1.727     0.5790    1.3237     2.254
+## log(depsim + 1)                   0.990     1.0101    0.7252     1.352
+## log(desc + 1)                     1.074     0.9314    0.9056     1.273
 ## 
 ## Concordance= 0.885  (se = 0.01 )
-## Likelihood ratio test= 1119  on 9 df,   p=&lt;2e-16
-## Wald test            = 1410  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 4588  on 9 df,   p=&lt;2e-16</code></pre>
+## Likelihood ratio test= 1124  on 9 df,   p=&lt;2e-16
+## Wald test            = 1389  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 4575  on 9 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_slack)
 #anova(coxph_slack)</code></pre>
 </div>
@@ -641,46 +604,46 @@ summary(coxph_gitter)</code></pre>
 ##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
 ##     data = df_gitter)
 ## 
-##   n= 203219, number of events= 2957 
+##   n= 202633, number of events= 2957 
 ## 
 ##                                    coef exp(coef)  se(coef)      z
-## log(n_commits + 1)             0.349457  1.418297  0.015637 22.348
-## log(n_watchers + 1)            0.153055  1.165389  0.011571 13.227
-## other_badge &gt; 0TRUE            0.418878  1.520255  0.046586  8.991
-## log(all_popularity + 1)        0.275031  1.316571  0.027303 10.073
-## log(act_watchers + 1)         -0.008297  0.991738  0.014972 -0.554
-## log(act_undir_committers + 1)  0.548379  1.730446  0.018635 29.427
-## log(depgraph + 1)              0.814397  2.257814  0.053359 15.263
-## log(depsim + 1)               -0.012415  0.987661  0.135873 -0.091
-## log(desc + 1)                  1.111782  3.039771  0.071322 15.588
+## log(n_commits + 1)             0.355636  1.427087  0.015802 22.506
+## log(n_watchers + 1)            0.134977  1.144511  0.011574 11.662
+## other_badge &gt; 0TRUE            0.437615  1.549008  0.046640  9.383
+## log(all_popularity + 1)        0.260128  1.297096  0.027352  9.510
+## log(act_watchers + 1)         -0.006831  0.993193  0.014811 -0.461
+## log(act_undir_committers + 1)  0.531301  1.701144  0.018944 28.046
+## log(depgraph + 1)              0.947964  2.580450  0.051807 18.298
+## log(depsim + 1)               -0.518740  0.595270  0.173964 -2.982
+## log(desc + 1)                  0.839666  2.315594  0.076408 10.989
 ##                               Pr(&gt;|z|)    
-## log(n_commits + 1)              &lt;2e-16 ***
-## log(n_watchers + 1)             &lt;2e-16 ***
-## other_badge &gt; 0TRUE             &lt;2e-16 ***
-## log(all_popularity + 1)         &lt;2e-16 ***
-## log(act_watchers + 1)            0.579    
-## log(act_undir_committers + 1)   &lt;2e-16 ***
-## log(depgraph + 1)               &lt;2e-16 ***
-## log(depsim + 1)                  0.927    
-## log(desc + 1)                   &lt;2e-16 ***
+## log(n_commits + 1)             &lt; 2e-16 ***
+## log(n_watchers + 1)            &lt; 2e-16 ***
+## other_badge &gt; 0TRUE            &lt; 2e-16 ***
+## log(all_popularity + 1)        &lt; 2e-16 ***
+## log(act_watchers + 1)          0.64466    
+## log(act_undir_committers + 1)  &lt; 2e-16 ***
+## log(depgraph + 1)              &lt; 2e-16 ***
+## log(depsim + 1)                0.00286 ** 
+## log(desc + 1)                  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.4183     0.7051    1.3755     1.462
-## log(n_watchers + 1)              1.1654     0.8581    1.1393     1.192
-## other_badge &gt; 0TRUE              1.5203     0.6578    1.3876     1.666
-## log(all_popularity + 1)          1.3166     0.7595    1.2480     1.389
-## log(act_watchers + 1)            0.9917     1.0083    0.9631     1.021
-## log(act_undir_committers + 1)    1.7304     0.5779    1.6684     1.795
-## log(depgraph + 1)                2.2578     0.4429    2.0336     2.507
-## log(depsim + 1)                  0.9877     1.0125    0.7567     1.289
-## log(desc + 1)                    3.0398     0.3290    2.6432     3.496
+## log(n_commits + 1)               1.4271     0.7007    1.3836    1.4720
+## log(n_watchers + 1)              1.1445     0.8737    1.1188    1.1708
+## other_badge &gt; 0TRUE              1.5490     0.6456    1.4137    1.6973
+## log(all_popularity + 1)          1.2971     0.7710    1.2294    1.3685
+## log(act_watchers + 1)            0.9932     1.0069    0.9648    1.0224
+## log(act_undir_committers + 1)    1.7011     0.5878    1.6391    1.7655
+## log(depgraph + 1)                2.5805     0.3875    2.3313    2.8562
+## log(depsim + 1)                  0.5953     1.6799    0.4233    0.8371
+## log(desc + 1)                    2.3156     0.4319    1.9935    2.6897
 ## 
-## Concordance= 0.79  (se = 0.005 )
-## Likelihood ratio test= 3550  on 9 df,   p=&lt;2e-16
-## Wald test            = 5097  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 8142  on 9 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.789  (se = 0.005 )
+## Likelihood ratio test= 3485  on 9 df,   p=&lt;2e-16
+## Wald test            = 4919  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 6735  on 9 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_gitter)
 #anova(coxph_gitter)</code></pre>
 </div>
@@ -708,75 +671,75 @@ summary(coxph_license)</code></pre>
 ##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
 ##     data = df_license)
 ## 
-##   n= 191758, number of events= 2886 
+##   n= 191237, number of events= 2886 
 ## 
 ##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
-## log(n_commits + 1)             0.42709   1.53280  0.01764 24.206  &lt; 2e-16
-## log(n_watchers + 1)           -0.04071   0.96011  0.01526 -2.668  0.00762
-## other_badge &gt; 0TRUE            0.77774   2.17655  0.04799 16.208  &lt; 2e-16
-## log(all_popularity + 1)        0.85276   2.34611  0.03853 22.134  &lt; 2e-16
-## log(act_watchers + 1)         -0.18301   0.83276  0.02320 -7.889 3.04e-15
-## log(act_undir_committers + 1)  0.84296   2.32323  0.02173 38.798  &lt; 2e-16
-## log(depgraph + 1)              0.75769   2.13334  0.06831 11.092  &lt; 2e-16
-## log(depsim + 1)                0.29044   1.33702  0.12244  2.372  0.01769
-## log(desc + 1)                  0.77555   2.17178  0.06272 12.366  &lt; 2e-16
+## log(n_commits + 1)             0.41402   1.51289  0.01737 23.834  &lt; 2e-16
+## log(n_watchers + 1)           -0.05130   0.94999  0.01536 -3.341 0.000836
+## other_badge &gt; 0TRUE            0.78431   2.19089  0.04822 16.265  &lt; 2e-16
+## log(all_popularity + 1)        0.85728   2.35675  0.03839 22.333  &lt; 2e-16
+## log(act_watchers + 1)         -0.22222   0.80074  0.02315 -9.601  &lt; 2e-16
+## log(act_undir_committers + 1)  0.87176   2.39111  0.02191 39.786  &lt; 2e-16
+## log(depgraph + 1)              0.56197   1.75413  0.06947  8.089 6.02e-16
+## log(depsim + 1)                0.40655   1.50163  0.12461  3.263 0.001104
+## log(desc + 1)                  0.76742   2.15420  0.06202 12.373  &lt; 2e-16
 ##                                  
 ## log(n_commits + 1)            ***
-## log(n_watchers + 1)           ** 
+## log(n_watchers + 1)           ***
 ## other_badge &gt; 0TRUE           ***
 ## log(all_popularity + 1)       ***
 ## log(act_watchers + 1)         ***
 ## log(act_undir_committers + 1) ***
 ## log(depgraph + 1)             ***
-## log(depsim + 1)               *  
+## log(depsim + 1)               ** 
 ## log(desc + 1)                 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.5328     0.6524    1.4807    1.5867
-## log(n_watchers + 1)              0.9601     1.0416    0.9318    0.9893
-## other_badge &gt; 0TRUE              2.1766     0.4594    1.9812    2.3912
-## log(all_popularity + 1)          2.3461     0.4262    2.1755    2.5301
-## log(act_watchers + 1)            0.8328     1.2008    0.7957    0.8715
-## log(act_undir_committers + 1)    2.3232     0.4304    2.2264    2.4243
-## log(depgraph + 1)                2.1333     0.4687    1.8660    2.4390
-## log(depsim + 1)                  1.3370     0.7479    1.0518    1.6997
-## log(desc + 1)                    2.1718     0.4605    1.9206    2.4559
+## log(n_commits + 1)               1.5129     0.6610    1.4622    1.5653
+## log(n_watchers + 1)              0.9500     1.0526    0.9218    0.9790
+## other_badge &gt; 0TRUE              2.1909     0.4564    1.9933    2.4080
+## log(all_popularity + 1)          2.3567     0.4243    2.1859    2.5409
+## log(act_watchers + 1)            0.8007     1.2488    0.7652    0.8379
+## log(act_undir_committers + 1)    2.3911     0.4182    2.2906    2.4960
+## log(depgraph + 1)                1.7541     0.5701    1.5308    2.0100
+## log(depsim + 1)                  1.5016     0.6659    1.1762    1.9170
+## log(desc + 1)                    2.1542     0.4642    1.9076    2.4327
 ## 
-## Concordance= 0.825  (se = 0.005 )
-## Likelihood ratio test= 4763  on 9 df,   p=&lt;2e-16
-## Wald test            = 6185  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 11495  on 9 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.824  (se = 0.005 )
+## Likelihood ratio test= 4687  on 9 df,   p=&lt;2e-16
+## Wald test            = 6154  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 11553  on 9 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>vif(coxph_license)</code></pre>
 <pre><code>## Warning in vif.default(coxph_license): No intercept: vifs may not be
 ## sensible.</code></pre>
 <pre><code>##            log(n_commits + 1)           log(n_watchers + 1) 
-##                      1.232579                      1.186693 
+##                      1.237679                      1.208881 
 ##               other_badge &gt; 0       log(all_popularity + 1) 
-##                      1.065001                      1.036862 
+##                      1.066395                      1.033280 
 ##         log(act_watchers + 1) log(act_undir_committers + 1) 
-##                      1.366102                      1.729540 
+##                      1.483502                      1.889888 
 ##             log(depgraph + 1)               log(depsim + 1) 
-##                      1.263966                      1.004904 
+##                      1.388272                      1.004082 
 ##                 log(desc + 1) 
-##                      1.131131</code></pre>
+##                      1.128890</code></pre>
 <pre class="r"><code>anova(coxph_license)</code></pre>
 <pre><code>## Analysis of Deviance Table
 ##  Cox model: response is Surv(start_interval, end_interval, adopted == 1)
 ## Terms added sequentially (first to last)
 ## 
 ##                               loglik     Chisq Df Pr(&gt;|Chi|)    
-## NULL                          -24874                            
-## log(n_commits + 1)            -24166 1417.6169  1  &lt; 2.2e-16 ***
-## log(n_watchers + 1)           -24144   42.9547  1  5.602e-11 ***
-## other_badge &gt; 0               -23872  544.7207  1  &lt; 2.2e-16 ***
-## log(all_popularity + 1)       -23459  824.7834  1  &lt; 2.2e-16 ***
-## log(act_watchers + 1)         -23446   27.6970  1  1.419e-07 ***
-## log(act_undir_committers + 1) -22604 1682.7434  1  &lt; 2.2e-16 ***
-## log(depgraph + 1)             -22549  111.1161  1  &lt; 2.2e-16 ***
-## log(depsim + 1)               -22546    5.0905  1    0.02406 *  
-## log(desc + 1)                 -22493  106.2511  1  &lt; 2.2e-16 ***
+## NULL                          -24872                            
+## log(n_commits + 1)            -24221 1302.2269  1  &lt; 2.2e-16 ***
+## log(n_watchers + 1)           -24198   46.3831  1  9.725e-12 ***
+## other_badge &gt; 0               -23910  575.6798  1  &lt; 2.2e-16 ***
+## log(all_popularity + 1)       -23506  808.3476  1  &lt; 2.2e-16 ***
+## log(act_watchers + 1)         -23492   26.7381  1  2.330e-07 ***
+## log(act_undir_committers + 1) -22615 1754.5713  1  &lt; 2.2e-16 ***
+## log(depgraph + 1)             -22587   57.2148  1  3.907e-14 ***
+## log(depsim + 1)               -22582    9.0322  1   0.002653 ** 
+## log(desc + 1)                 -22529  106.7910  1  &lt; 2.2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -804,46 +767,46 @@ summary(coxph_npm_version)</code></pre>
 ##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
 ##     data = df_npm_version)
 ## 
-##   n= 1194866, number of events= 21985 
+##   n= 1190751, number of events= 21985 
 ## 
-##                                    coef exp(coef)  se(coef)      z
-## log(n_commits + 1)             0.374036  1.453590  0.006195 60.379
-## log(n_watchers + 1)           -0.051054  0.950228  0.005447 -9.373
-## other_badge &gt; 0TRUE            0.821804  2.274600  0.016063 51.163
-## log(all_popularity + 1)        0.305406  1.357176  0.009499 32.150
-## log(act_watchers + 1)         -0.011322  0.988742  0.004751 -2.383
-## log(act_undir_committers + 1)  0.390840  1.478222  0.005638 69.328
-## log(depgraph + 1)              0.361182  1.435024  0.015349 23.531
-## log(depsim + 1)                0.003620  1.003627  0.024250  0.149
-## log(desc + 1)                  0.356025  1.427643  0.021521 16.543
+##                                     coef  exp(coef)   se(coef)      z
+## log(n_commits + 1)             0.3796386  1.4617562  0.0061955 61.277
+## log(n_watchers + 1)           -0.0475990  0.9535160  0.0054550 -8.726
+## other_badge &gt; 0TRUE            0.8284769  2.2898285  0.0160402 51.650
+## log(all_popularity + 1)        0.3056725  1.3575376  0.0095067 32.153
+## log(act_watchers + 1)         -0.0193633  0.9808230  0.0047500 -4.077
+## log(act_undir_committers + 1)  0.3948090  1.4841007  0.0056090 70.388
+## log(depgraph + 1)              0.3678268  1.4445918  0.0152724 24.084
+## log(depsim + 1)                0.0005688  1.0005690  0.0241458  0.024
+## log(desc + 1)                  0.3225828  1.3806892  0.0210765 15.305
 ##                               Pr(&gt;|z|)    
-## log(n_commits + 1)              &lt;2e-16 ***
-## log(n_watchers + 1)             &lt;2e-16 ***
-## other_badge &gt; 0TRUE             &lt;2e-16 ***
-## log(all_popularity + 1)         &lt;2e-16 ***
-## log(act_watchers + 1)           0.0172 *  
-## log(act_undir_committers + 1)   &lt;2e-16 ***
-## log(depgraph + 1)               &lt;2e-16 ***
-## log(depsim + 1)                 0.8813    
-## log(desc + 1)                   &lt;2e-16 ***
+## log(n_commits + 1)             &lt; 2e-16 ***
+## log(n_watchers + 1)            &lt; 2e-16 ***
+## other_badge &gt; 0TRUE            &lt; 2e-16 ***
+## log(all_popularity + 1)        &lt; 2e-16 ***
+## log(act_watchers + 1)         4.57e-05 ***
+## log(act_undir_committers + 1)  &lt; 2e-16 ***
+## log(depgraph + 1)              &lt; 2e-16 ***
+## log(depsim + 1)                  0.981    
+## log(desc + 1)                  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.4536     0.6880    1.4360    1.4713
-## log(n_watchers + 1)              0.9502     1.0524    0.9401    0.9604
-## other_badge &gt; 0TRUE              2.2746     0.4396    2.2041    2.3473
-## log(all_popularity + 1)          1.3572     0.7368    1.3321    1.3827
-## log(act_watchers + 1)            0.9887     1.0114    0.9796    0.9980
-## log(act_undir_committers + 1)    1.4782     0.6765    1.4620    1.4946
-## log(depgraph + 1)                1.4350     0.6969    1.3925    1.4789
-## log(depsim + 1)                  1.0036     0.9964    0.9570    1.0525
-## log(desc + 1)                    1.4276     0.7005    1.3687    1.4891
+## log(n_commits + 1)               1.4618     0.6841    1.4441    1.4796
+## log(n_watchers + 1)              0.9535     1.0488    0.9434    0.9638
+## other_badge &gt; 0TRUE              2.2898     0.4367    2.2190    2.3630
+## log(all_popularity + 1)          1.3575     0.7366    1.3325    1.3831
+## log(act_watchers + 1)            0.9808     1.0196    0.9717    0.9900
+## log(act_undir_committers + 1)    1.4841     0.6738    1.4679    1.5005
+## log(depgraph + 1)                1.4446     0.6922    1.4020    1.4885
+## log(depsim + 1)                  1.0006     0.9994    0.9543    1.0491
+## log(desc + 1)                    1.3807     0.7243    1.3248    1.4389
 ## 
-## Concordance= 0.783  (se = 0.002 )
-## Likelihood ratio test= 20901  on 9 df,   p=&lt;2e-16
-## Wald test            = 23164  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 25997  on 9 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.782  (se = 0.002 )
+## Likelihood ratio test= 20932  on 9 df,   p=&lt;2e-16
+## Wald test            = 23159  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 25779  on 9 df,   p=&lt;2e-16</code></pre>
 <pre class="r"><code>#vif(coxph_npm_version)
 #anova(coxph_npm_version)</code></pre>
 </div>
@@ -871,46 +834,608 @@ summary(coxph_npm_downloads)</code></pre>
 ##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
 ##     data = df_npm_downloads)
 ## 
-##   n= 490203, number of events= 7594 
+##   n= 491198, number of events= 7594 
 ## 
 ##                                    coef exp(coef)  se(coef)      z
-## log(n_commits + 1)             0.269603  1.309444  0.010696 25.206
-## log(n_watchers + 1)            0.033231  1.033789  0.008641  3.846
-## other_badge &gt; 0TRUE            0.948730  2.582427  0.031301 30.310
-## log(all_popularity + 1)        0.509384  1.664265  0.020491 24.859
-## log(act_watchers + 1)         -0.042822  0.958082  0.009357 -4.577
-## log(act_undir_committers + 1)  0.574996  1.777123  0.009689 59.345
-## log(depgraph + 1)              0.568650  1.765882  0.028889 19.684
-## log(depsim + 1)                0.031613  1.032118  0.077999  0.405
-## log(desc + 1)                  0.916834  2.501360  0.038240 23.976
+## log(n_commits + 1)             0.250489  1.284653  0.010643 23.536
+## log(n_watchers + 1)            0.034657  1.035265  0.008553  4.052
+## other_badge &gt; 0TRUE            0.950759  2.587674  0.031367 30.310
+## log(all_popularity + 1)        0.494894  1.640324  0.020232 24.461
+## log(act_watchers + 1)         -0.052940  0.948437  0.009394 -5.635
+## log(act_undir_committers + 1)  0.579093  1.784419  0.009626 60.158
+## log(depgraph + 1)              0.571894  1.771619  0.028432 20.114
+## log(depsim + 1)               -0.014801  0.985308  0.076502 -0.193
+## log(desc + 1)                  0.987931  2.685672  0.037651 26.239
 ##                               Pr(&gt;|z|)    
 ## log(n_commits + 1)             &lt; 2e-16 ***
-## log(n_watchers + 1)            0.00012 ***
+## log(n_watchers + 1)           5.08e-05 ***
 ## other_badge &gt; 0TRUE            &lt; 2e-16 ***
 ## log(all_popularity + 1)        &lt; 2e-16 ***
-## log(act_watchers + 1)         4.73e-06 ***
+## log(act_watchers + 1)         1.75e-08 ***
 ## log(act_undir_committers + 1)  &lt; 2e-16 ***
 ## log(depgraph + 1)              &lt; 2e-16 ***
-## log(depsim + 1)                0.68526    
+## log(depsim + 1)                  0.847    
 ## log(desc + 1)                  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ##                               exp(coef) exp(-coef) lower .95 upper .95
-## log(n_commits + 1)               1.3094     0.7637    1.2823    1.3372
-## log(n_watchers + 1)              1.0338     0.9673    1.0164    1.0514
-## other_badge &gt; 0TRUE              2.5824     0.3872    2.4288    2.7458
-## log(all_popularity + 1)          1.6643     0.6009    1.5988    1.7325
-## log(act_watchers + 1)            0.9581     1.0438    0.9407    0.9758
-## log(act_undir_committers + 1)    1.7771     0.5627    1.7437    1.8112
-## log(depgraph + 1)                1.7659     0.5663    1.6687    1.8688
-## log(depsim + 1)                  1.0321     0.9689    0.8858    1.2026
-## log(desc + 1)                    2.5014     0.3998    2.3207    2.6960
+## log(n_commits + 1)               1.2847     0.7784    1.2581    1.3117
+## log(n_watchers + 1)              1.0353     0.9659    1.0181    1.0528
+## other_badge &gt; 0TRUE              2.5877     0.3864    2.4334    2.7518
+## log(all_popularity + 1)          1.6403     0.6096    1.5766    1.7067
+## log(act_watchers + 1)            0.9484     1.0544    0.9311    0.9661
+## log(act_undir_committers + 1)    1.7844     0.5604    1.7511    1.8184
+## log(depgraph + 1)                1.7716     0.5645    1.6756    1.8731
+## log(depsim + 1)                  0.9853     1.0149    0.8481    1.1447
+## log(desc + 1)                    2.6857     0.3723    2.4946    2.8914
 ## 
-## Concordance= 0.802  (se = 0.003 )
-## Likelihood ratio test= 9760  on 9 df,   p=&lt;2e-16
-## Wald test            = 13009  on 9 df,   p=&lt;2e-16
-## Score (logrank) test = 18117  on 9 df,   p=&lt;2e-16</code></pre>
+## Concordance= 0.801  (se = 0.003 )
+## Likelihood ratio test= 9667  on 9 df,   p=&lt;2e-16
+## Wald test            = 12955  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 18166  on 9 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-travis" class="section level2">
+<h2>Running Survival Models – travis</h2>
+<pre class="r"><code>coxph_travis &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_travis)
+summary(coxph_travis)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
+##     log(depsim + 1) + log(desc + 1), data = df_travis)
+## 
+##   n= 1252212, number of events= 32283 
+## 
+##                                    coef exp(coef)  se(coef)       z
+## log(n_commits + 1)             0.459310  1.582982  0.004961  92.590
+## log(n_watchers + 1)           -0.118933  0.887867  0.004612 -25.786
+## other_badge &gt; 0TRUE            0.678866  1.971641  0.012200  55.645
+## log(all_popularity + 1)       -0.085779  0.917797  0.003858 -22.236
+## comp_badge &gt; 0TRUE            -4.417962  0.012059  0.316318 -13.967
+## log(act_watchers + 1)          0.006708  1.006731  0.003636   1.845
+## log(act_undir_committers + 1)  0.310262  1.363782  0.004458  69.603
+## log(depgraph + 1)              0.164467  1.178765  0.009877  16.651
+## log(depsim + 1)               -0.049748  0.951470  0.020848  -2.386
+## log(desc + 1)                  0.378845  1.460597  0.016977  22.315
+##                               Pr(&gt;|z|)    
+## log(n_commits + 1)              &lt;2e-16 ***
+## log(n_watchers + 1)             &lt;2e-16 ***
+## other_badge &gt; 0TRUE             &lt;2e-16 ***
+## log(all_popularity + 1)         &lt;2e-16 ***
+## comp_badge &gt; 0TRUE              &lt;2e-16 ***
+## log(act_watchers + 1)           0.0651 .  
+## log(act_undir_committers + 1)   &lt;2e-16 ***
+## log(depgraph + 1)               &lt;2e-16 ***
+## log(depsim + 1)                 0.0170 *  
+## log(desc + 1)                   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)              1.58298     0.6317  1.567666   1.59845
+## log(n_watchers + 1)             0.88787     1.1263  0.879877   0.89593
+## other_badge &gt; 0TRUE             1.97164     0.5072  1.925056   2.01935
+## log(all_popularity + 1)         0.91780     1.0896  0.910884   0.92476
+## comp_badge &gt; 0TRUE              0.01206    82.9271  0.006487   0.02242
+## log(act_watchers + 1)           1.00673     0.9933  0.999582   1.01393
+## log(act_undir_committers + 1)   1.36378     0.7333  1.351919   1.37575
+## log(depgraph + 1)               1.17876     0.8483  1.156165   1.20181
+## log(depsim + 1)                 0.95147     1.0510  0.913374   0.99115
+## log(desc + 1)                   1.46060     0.6847  1.412795   1.51002
+## 
+## Concordance= 0.77  (se = 0.002 )
+## Likelihood ratio test= 24399  on 10 df,   p=&lt;2e-16
+## Wald test            = 26743  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 28175  on 10 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-circle" class="section level2">
+<h2>Running Survival Models – circle</h2>
+<pre class="r"><code>coxph_circle &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_circle)
+summary(coxph_circle)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
+##     log(depsim + 1) + log(desc + 1), data = df_circle)
+## 
+##   n= 118819, number of events= 1798 
+## 
+##                                   coef exp(coef) se(coef)       z Pr(&gt;|z|)
+## log(n_commits + 1)             0.35636   1.42812  0.02083  17.108  &lt; 2e-16
+## log(n_watchers + 1)           -0.05107   0.95021  0.01771  -2.883  0.00394
+## other_badge &gt; 0TRUE            0.66585   1.94614  0.05174  12.870  &lt; 2e-16
+## log(all_popularity + 1)        0.74092   2.09786  0.05135  14.429  &lt; 2e-16
+## comp_badge &gt; 0TRUE            -2.40236   0.09050  0.12071 -19.903  &lt; 2e-16
+## log(act_watchers + 1)          0.04470   1.04572  0.02959   1.511  0.13080
+## log(act_undir_committers + 1)  0.84966   2.33885  0.03476  24.443  &lt; 2e-16
+## log(depgraph + 1)              0.41427   1.51327  0.08675   4.776 1.79e-06
+## log(depsim + 1)               -0.57774   0.56117  0.40791  -1.416  0.15668
+## log(desc + 1)                  0.58218   1.78994  0.11503   5.061 4.17e-07
+##                                  
+## log(n_commits + 1)            ***
+## log(n_watchers + 1)           ** 
+## other_badge &gt; 0TRUE           ***
+## log(all_popularity + 1)       ***
+## comp_badge &gt; 0TRUE            ***
+## log(act_watchers + 1)            
+## log(act_undir_committers + 1) ***
+## log(depgraph + 1)             ***
+## log(depsim + 1)                  
+## log(desc + 1)                 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.4281     0.7002   1.37099    1.4876
+## log(n_watchers + 1)              0.9502     1.0524   0.91779    0.9838
+## other_badge &gt; 0TRUE              1.9461     0.5138   1.75847    2.1538
+## log(all_popularity + 1)          2.0979     0.4767   1.89701    2.3200
+## comp_badge &gt; 0TRUE               0.0905    11.0493   0.07144    0.1147
+## log(act_watchers + 1)            1.0457     0.9563   0.98680    1.1082
+## log(act_undir_committers + 1)    2.3389     0.4276   2.18481    2.5037
+## log(depgraph + 1)                1.5133     0.6608   1.27666    1.7937
+## log(depsim + 1)                  0.5612     1.7820   0.25228    1.2483
+## log(desc + 1)                    1.7899     0.5587   1.42864    2.2426
+## 
+## Concordance= 0.856  (se = 0.005 )
+## Likelihood ratio test= 3294  on 10 df,   p=&lt;2e-16
+## Wald test            = 3685  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 6976  on 10 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-appveyor" class="section level2">
+<h2>Running Survival Models – appveyor</h2>
+<pre class="r"><code>coxph_appveyor &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_appveyor)
+summary(coxph_appveyor)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
+##     log(depsim + 1) + log(desc + 1), data = df_appveyor)
+## 
+##   n= 111635, number of events= 1598 
+## 
+##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
+## log(n_commits + 1)             0.34512   1.41217  0.02285 15.104  &lt; 2e-16
+## log(n_watchers + 1)           -0.05695   0.94464  0.01856 -3.068 0.002157
+## other_badge &gt; 0TRUE            1.47101   4.35363  0.07566 19.441  &lt; 2e-16
+## log(all_popularity + 1)        0.24522   1.27791  0.04089  5.997 2.02e-09
+## comp_badge &gt; 0TRUE             0.03601   1.03667  0.05243  0.687 0.492194
+## log(act_watchers + 1)          0.09175   1.09609  0.02467  3.719 0.000200
+## log(act_undir_committers + 1)  0.64843   1.91254  0.02799 23.164  &lt; 2e-16
+## log(depgraph + 1)              0.71283   2.03976  0.07094 10.049  &lt; 2e-16
+## log(depsim + 1)                0.82529   2.28254  0.24067  3.429 0.000606
+## log(desc + 1)                  1.73707   5.68070  0.13935 12.465  &lt; 2e-16
+##                                  
+## log(n_commits + 1)            ***
+## log(n_watchers + 1)           ** 
+## other_badge &gt; 0TRUE           ***
+## log(all_popularity + 1)       ***
+## comp_badge &gt; 0TRUE               
+## log(act_watchers + 1)         ***
+## log(act_undir_committers + 1) ***
+## log(depgraph + 1)             ***
+## log(depsim + 1)               ***
+## log(desc + 1)                 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.4122     0.7081    1.3503    1.4768
+## log(n_watchers + 1)              0.9446     1.0586    0.9109    0.9796
+## other_badge &gt; 0TRUE              4.3536     0.2297    3.7536    5.0496
+## log(all_popularity + 1)          1.2779     0.7825    1.1795    1.3845
+## comp_badge &gt; 0TRUE               1.0367     0.9646    0.9354    1.1489
+## log(act_watchers + 1)            1.0961     0.9123    1.0444    1.1504
+## log(act_undir_committers + 1)    1.9125     0.5229    1.8104    2.0204
+## log(depgraph + 1)                2.0398     0.4903    1.7750    2.3440
+## log(depsim + 1)                  2.2825     0.4381    1.4242    3.6583
+## log(desc + 1)                    5.6807     0.1760    4.3230    7.4648
+## 
+## Concordance= 0.834  (se = 0.006 )
+## Likelihood ratio test= 2696  on 10 df,   p=&lt;2e-16
+## Wald test            = 3493  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 5600  on 10 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-codeship" class="section level2">
+<h2>Running Survival Models – codeship</h2>
+<pre class="r"><code>coxph_codeship &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       #+ log(depsim+1)
+                       #+ log(desc+1)
+                       , data=df_codeship)
+summary(coxph_codeship)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1), data = df_codeship)
+## 
+##   n= 19642, number of events= 317 
+## 
+##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
+## log(n_commits + 1)             0.41947   1.52115  0.04579  9.161  &lt; 2e-16
+## log(n_watchers + 1)           -0.06062   0.94118  0.04899 -1.237    0.216
+## other_badge &gt; 0TRUE            0.60115   1.82422  0.13067  4.601 4.21e-06
+## log(all_popularity + 1)        0.04806   1.04923  0.05935  0.810    0.418
+## comp_badge &gt; 0TRUE            -1.91632   0.14715  0.24928 -7.688 1.50e-14
+## log(act_watchers + 1)         -0.11110   0.89485  0.12975 -0.856    0.392
+## log(act_undir_committers + 1)  0.97467   2.65030  0.06831 14.269  &lt; 2e-16
+## log(depgraph + 1)              1.83769   6.28203  0.37452  4.907 9.26e-07
+##                                  
+## log(n_commits + 1)            ***
+## log(n_watchers + 1)              
+## other_badge &gt; 0TRUE           ***
+## log(all_popularity + 1)          
+## comp_badge &gt; 0TRUE            ***
+## log(act_watchers + 1)            
+## log(act_undir_committers + 1) ***
+## log(depgraph + 1)             ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.5212     0.6574   1.39059    1.6640
+## log(n_watchers + 1)              0.9412     1.0625   0.85501    1.0360
+## other_badge &gt; 0TRUE              1.8242     0.5482   1.41205    2.3567
+## log(all_popularity + 1)          1.0492     0.9531   0.93401    1.1787
+## comp_badge &gt; 0TRUE               0.1471     6.7959   0.09028    0.2398
+## log(act_watchers + 1)            0.8949     1.1175   0.69392    1.1540
+## log(act_undir_committers + 1)    2.6503     0.3773   2.31821    3.0300
+## log(depgraph + 1)                6.2820     0.1592   3.01514   13.0886
+## 
+## Concordance= 0.847  (se = 0.012 )
+## Likelihood ratio test= 571.1  on 8 df,   p=&lt;2e-16
+## Wald test            = 762.1  on 8 df,   p=&lt;2e-16
+## Score (logrank) test = 1675  on 8 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-coveralls" class="section level2">
+<h2>Running Survival Models – coveralls</h2>
+<pre class="r"><code>coxph_coveralls &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_coveralls)
+summary(coxph_coveralls)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
+##     log(depsim + 1) + log(desc + 1), data = df_coveralls)
+## 
+##   n= 494898, number of events= 8021 
+## 
+##                                    coef exp(coef)  se(coef)       z
+## log(n_commits + 1)             0.474857  1.607784  0.010148  46.793
+## log(n_watchers + 1)           -0.153451  0.857743  0.009614 -15.961
+## other_badge &gt; 0TRUE            1.078139  2.939204  0.030288  35.597
+## log(all_popularity + 1)        0.126805  1.135196  0.014266   8.889
+## comp_badge &gt; 0TRUE            -0.030768  0.969700  0.129910  -0.237
+## log(act_watchers + 1)         -0.061639  0.940222  0.009253  -6.661
+## log(act_undir_committers + 1)  0.526405  1.692836  0.010526  50.011
+## log(depgraph + 1)              0.516992  1.676975  0.027726  18.646
+## log(depsim + 1)               -0.201718  0.817325  0.063363  -3.184
+## log(desc + 1)                  0.721974  2.058492  0.051340  14.063
+##                               Pr(&gt;|z|)    
+## log(n_commits + 1)             &lt; 2e-16 ***
+## log(n_watchers + 1)            &lt; 2e-16 ***
+## other_badge &gt; 0TRUE            &lt; 2e-16 ***
+## log(all_popularity + 1)        &lt; 2e-16 ***
+## comp_badge &gt; 0TRUE             0.81278    
+## log(act_watchers + 1)         2.71e-11 ***
+## log(act_undir_committers + 1)  &lt; 2e-16 ***
+## log(depgraph + 1)              &lt; 2e-16 ***
+## log(depsim + 1)                0.00145 ** 
+## log(desc + 1)                  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.6078     0.6220    1.5761    1.6401
+## log(n_watchers + 1)              0.8577     1.1659    0.8417    0.8741
+## other_badge &gt; 0TRUE              2.9392     0.3402    2.7698    3.1190
+## log(all_popularity + 1)          1.1352     0.8809    1.1039    1.1674
+## comp_badge &gt; 0TRUE               0.9697     1.0312    0.7517    1.2509
+## log(act_watchers + 1)            0.9402     1.0636    0.9233    0.9574
+## log(act_undir_committers + 1)    1.6928     0.5907    1.6583    1.7281
+## log(depgraph + 1)                1.6770     0.5963    1.5883    1.7706
+## log(depsim + 1)                  0.8173     1.2235    0.7219    0.9254
+## log(desc + 1)                    2.0585     0.4858    1.8614    2.2764
+## 
+## Concordance= 0.8  (se = 0.003 )
+## Likelihood ratio test= 9533  on 10 df,   p=&lt;2e-16
+## Wald test            = 11268  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 13297  on 10 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-codeclimate" class="section level2">
+<h2>Running Survival Models – codeclimate</h2>
+<pre class="r"><code>coxph_codeclimate &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       #+ log(desc+1)
+                       , data=df_codeclimate)
+summary(coxph_codeclimate)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
+##     log(depsim + 1), data = df_codeclimate)
+## 
+##   n= 209372, number of events= 3306 
+## 
+##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
+## log(n_commits + 1)             0.51489   1.67345  0.01602 32.146  &lt; 2e-16
+## log(n_watchers + 1)           -0.07590   0.92690  0.01465 -5.181 2.21e-07
+## other_badge &gt; 0TRUE            0.96854   2.63409  0.04774 20.287  &lt; 2e-16
+## log(all_popularity + 1)        0.07539   1.07831  0.02115  3.564 0.000365
+## comp_badge &gt; 0TRUE             0.85855   2.35975  0.07284 11.787  &lt; 2e-16
+## log(act_watchers + 1)         -0.16251   0.85001  0.01991 -8.162 3.30e-16
+## log(act_undir_committers + 1)  0.57258   1.77283  0.01641 34.896  &lt; 2e-16
+## log(depgraph + 1)              0.88608   2.42561  0.06153 14.400  &lt; 2e-16
+## log(depsim + 1)                0.16327   1.17735  0.17266  0.946 0.344343
+##                                  
+## log(n_commits + 1)            ***
+## log(n_watchers + 1)           ***
+## other_badge &gt; 0TRUE           ***
+## log(all_popularity + 1)       ***
+## comp_badge &gt; 0TRUE            ***
+## log(act_watchers + 1)         ***
+## log(act_undir_committers + 1) ***
+## log(depgraph + 1)             ***
+## log(depsim + 1)                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.6734     0.5976    1.6217    1.7268
+## log(n_watchers + 1)              0.9269     1.0789    0.9007    0.9539
+## other_badge &gt; 0TRUE              2.6341     0.3796    2.3988    2.8925
+## log(all_popularity + 1)          1.0783     0.9274    1.0345    1.1240
+## comp_badge &gt; 0TRUE               2.3597     0.4238    2.0458    2.7219
+## log(act_watchers + 1)            0.8500     1.1765    0.8175    0.8838
+## log(act_undir_committers + 1)    1.7728     0.5641    1.7167    1.8308
+## log(depgraph + 1)                2.4256     0.4123    2.1500    2.7365
+## log(depsim + 1)                  1.1773     0.8494    0.8393    1.6515
+## 
+## Concordance= 0.809  (se = 0.005 )
+## Likelihood ratio test= 4440  on 9 df,   p=&lt;2e-16
+## Wald test            = 5750  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 8014  on 9 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-codecov" class="section level2">
+<h2>Running Survival Models – codecov</h2>
+<pre class="r"><code>coxph_codecov &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       + (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_codecov)
+summary(coxph_codecov)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + (comp_badge &gt; 0) + log(act_watchers + 
+##     1) + log(act_undir_committers + 1) + log(depgraph + 1) + 
+##     log(depsim + 1) + log(desc + 1), data = df_codecov)
+## 
+##   n= 170148, number of events= 2570 
+## 
+##                                   coef exp(coef) se(coef)      z Pr(&gt;|z|)
+## log(n_commits + 1)             0.36437   1.43961  0.01847 19.724  &lt; 2e-16
+## log(n_watchers + 1)           -0.04474   0.95625  0.01579 -2.832  0.00462
+## other_badge &gt; 0TRUE            1.05034   2.85863  0.05778 18.177  &lt; 2e-16
+## log(all_popularity + 1)        1.40708   4.08403  0.05860 24.013  &lt; 2e-16
+## comp_badge &gt; 0TRUE            -0.29358   0.74559  0.17568 -1.671  0.09469
+## log(act_watchers + 1)          0.03420   1.03479  0.02152  1.589  0.11199
+## log(act_undir_committers + 1)  0.75669   2.13120  0.02312 32.736  &lt; 2e-16
+## log(depgraph + 1)              0.48502   1.62421  0.08147  5.953 2.63e-09
+## log(depsim + 1)                0.16027   1.17383  0.12204  1.313  0.18908
+## log(desc + 1)                  0.11622   1.12325  0.04283  2.713  0.00666
+##                                  
+## log(n_commits + 1)            ***
+## log(n_watchers + 1)           ** 
+## other_badge &gt; 0TRUE           ***
+## log(all_popularity + 1)       ***
+## comp_badge &gt; 0TRUE            .  
+## log(act_watchers + 1)            
+## log(act_undir_committers + 1) ***
+## log(depgraph + 1)             ***
+## log(depsim + 1)                  
+## log(desc + 1)                 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.4396     0.6946    1.3884    1.4927
+## log(n_watchers + 1)              0.9562     1.0458    0.9271    0.9863
+## other_badge &gt; 0TRUE              2.8586     0.3498    2.5525    3.2014
+## log(all_popularity + 1)          4.0840     0.2449    3.6409    4.5811
+## comp_badge &gt; 0TRUE               0.7456     1.3412    0.5284    1.0520
+## log(act_watchers + 1)            1.0348     0.9664    0.9921    1.0794
+## log(act_undir_committers + 1)    2.1312     0.4692    2.0368    2.2300
+## log(depgraph + 1)                1.6242     0.6157    1.3845    1.9054
+## log(depsim + 1)                  1.1738     0.8519    0.9241    1.4910
+## log(desc + 1)                    1.1232     0.8903    1.0328    1.2216
+## 
+## Concordance= 0.856  (se = 0.004 )
+## Likelihood ratio test= 4955  on 10 df,   p=&lt;2e-16
+## Wald test            = 6039  on 10 df,   p=&lt;2e-16
+## Score (logrank) test = 13117  on 10 df,   p=&lt;2e-16</code></pre>
+</div>
+<div id="running-survival-models-codacy" class="section level2">
+<h2>Running Survival Models – codacy</h2>
+<pre class="r"><code>coxph_codacy &lt;- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge &gt; 0)
+                       + log(all_popularity+1)
+                       #+ (comp_badge&gt;0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_codacy)
+summary(coxph_codacy)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(start_interval, end_interval, adopted == 
+##     1) ~ +log(n_commits + 1) + log(n_watchers + 1) + (other_badge &gt; 
+##     0) + log(all_popularity + 1) + log(act_watchers + 1) + log(act_undir_committers + 
+##     1) + log(depgraph + 1) + log(depsim + 1) + log(desc + 1), 
+##     data = df_codacy)
+## 
+##   n= 40198, number of events= 596 
+## 
+##                                    coef exp(coef)  se(coef)      z
+## log(n_commits + 1)              0.53556   1.70840   0.03782 14.162
+## log(n_watchers + 1)            -0.08533   0.91821   0.03310 -2.578
+## other_badge &gt; 0TRUE             0.97151   2.64194   0.11957  8.125
+## log(all_popularity + 1)         0.57244   1.77258   0.07677  7.457
+## log(act_watchers + 1)           0.09014   1.09432   0.07736  1.165
+## log(act_undir_committers + 1)   1.20279   3.32939   0.07078 16.993
+## log(depgraph + 1)               0.37946   1.46149   0.18199  2.085
+## log(depsim + 1)                 0.46422   1.59077   0.57140  0.812
+## log(desc + 1)                   5.08914 162.25033   0.41370 12.302
+##                               Pr(&gt;|z|)    
+## log(n_commits + 1)             &lt; 2e-16 ***
+## log(n_watchers + 1)            0.00994 ** 
+## other_badge &gt; 0TRUE           4.48e-16 ***
+## log(all_popularity + 1)       8.88e-14 ***
+## log(act_watchers + 1)          0.24395    
+## log(act_undir_committers + 1)  &lt; 2e-16 ***
+## log(depgraph + 1)              0.03707 *  
+## log(depsim + 1)                0.41655    
+## log(desc + 1)                  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+##                               exp(coef) exp(-coef) lower .95 upper .95
+## log(n_commits + 1)               1.7084   0.585343    1.5864    1.8398
+## log(n_watchers + 1)              0.9182   1.089072    0.8605    0.9798
+## other_badge &gt; 0TRUE              2.6419   0.378510    2.0900    3.3397
+## log(all_popularity + 1)          1.7726   0.564150    1.5250    2.0604
+## log(act_watchers + 1)            1.0943   0.913806    0.9404    1.2735
+## log(act_undir_committers + 1)    3.3294   0.300355    2.8981    3.8249
+## log(depgraph + 1)                1.4615   0.684234    1.0230    2.0879
+## log(depsim + 1)                  1.5908   0.628628    0.5191    4.8751
+## log(desc + 1)                  162.2503   0.006163   72.1181  365.0285
+## 
+## Concordance= 0.854  (se = 0.009 )
+## Likelihood ratio test= 1152  on 9 df,   p=&lt;2e-16
+## Wald test            = 1428  on 9 df,   p=&lt;2e-16
+## Score (logrank) test = 3708  on 9 df,   p=&lt;2e-16</code></pre>
+<pre class="r"><code>vif(coxph_codacy)</code></pre>
+<pre><code>## Warning in vif.default(coxph_codacy): No intercept: vifs may not be
+## sensible.</code></pre>
+<pre><code>##            log(n_commits + 1)           log(n_watchers + 1) 
+##                      1.220263                      1.166149 
+##               other_badge &gt; 0       log(all_popularity + 1) 
+##                      1.076205                      1.048093 
+##         log(act_watchers + 1) log(act_undir_committers + 1) 
+##                      1.301576                      1.721455 
+##             log(depgraph + 1)               log(depsim + 1) 
+##                      1.494291                      1.080000 
+##                 log(desc + 1) 
+##                      1.047098</code></pre>
+<pre class="r"><code>anova(coxph_codacy)</code></pre>
+<pre><code>## Analysis of Deviance Table
+##  Cox model: response is Surv(start_interval, end_interval, adopted == 1)
+## Terms added sequentially (first to last)
+## 
+##                                loglik    Chisq Df Pr(&gt;|Chi|)    
+## NULL                          -4251.4                           
+## log(n_commits + 1)            -4036.0 430.8874  1  &lt; 2.2e-16 ***
+## log(n_watchers + 1)           -4031.8   8.3356  1   0.003887 ** 
+## other_badge &gt; 0               -3960.4 142.7463  1  &lt; 2.2e-16 ***
+## log(all_popularity + 1)       -3901.6 117.6977  1  &lt; 2.2e-16 ***
+## log(act_watchers + 1)         -3879.2  44.7837  1    2.2e-11 ***
+## log(act_undir_committers + 1) -3717.0 324.2766  1  &lt; 2.2e-16 ***
+## log(depgraph + 1)             -3715.0   4.0546  1   0.044050 *  
+## log(depsim + 1)               -3713.9   2.2090  1   0.137206    
+## log(desc + 1)                 -3675.3  77.2479  1  &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 
 

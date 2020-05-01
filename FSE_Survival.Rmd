@@ -61,43 +61,6 @@ get_df <- function(badge) {
   summary(df.sample[df.sample$adopted==1,]$start_interval)
   return(df.sample)
 }
-
-
-## Defining coxph model
-run_coxph_model <- function(df.sample){
-  coxph_model <- coxph(Surv(start_interval,
-                            end_interval,
-                            adopted == 1) ~
-                         # act_committers # replaced by act_undir_committers
-                       + log(n_commits+1)
-                       + log(n_watchers+1)
-                       + (other_badge > 0)
-                       + log(all_popularity+1)
-                       #+ (comp_badge>0)
-                       #+ log(act_pullers+1)
-                       + log(act_watchers+1)
-                       + log(act_undir_committers+1)
-                       #+ n_committers
-                       #+ tool_popularity # high VIF
-                       + log(depgraph+1)
-                       + log(depsim+1)
-                       + log(desc+1)
-                       #+ n_org #high VIF
-                       , data=df.sample)
-  
-  return(coxph_model)
-}
-
-## defining save_model
-save_model <- function(coxph_model, badge){
-  sink(paste("FITS_FSE/","FIT_SA_",toString(badge),".txt", sep=""))
-  print(summary(coxph_model))
-  print(anova(coxph_model))
-  print(vif(coxph_model))
-  sink()
-  save(coxph_model, file=paste('/data2/hemank/INPUT_SURVIVAL/FITS_FSE/FIT_',toString(badge),'_badge', sep=""))
-  sink()
-}
 ```
 
 ## Getting relevant data for badges.
@@ -163,6 +126,7 @@ summary(coxph_bithound)
 #anova(coxph_bithound)
 ```
 
+
 ## Running Survival Models -- Gemnasium
 ```{r code block_gemnasium, results='show'}
 coxph_gemnasium <- coxph(Surv(start_interval,
@@ -205,6 +169,8 @@ summary(coxph_saucelabs)
 #vif(coxph_saucelabs)
 #anova(coxph_saucelabs)
 ```
+
+
 ## Running Survival Models -- slack
 ```{r code block_slack, results='show'}
 coxph_slack <- coxph(Surv(start_interval,
@@ -225,6 +191,8 @@ summary(coxph_slack)
 #vif(coxph_slack)
 #anova(coxph_slack)
 ```
+
+
 ## Running Survival Models -- gitter
 ```{r code block_gitter, results='show'}
 coxph_gitter <- coxph(Surv(start_interval,
@@ -245,6 +213,8 @@ summary(coxph_gitter)
 #vif(coxph_gitter)
 #anova(coxph_gitter)
 ```
+
+
 ## Running Survival Models -- license
 ```{r code block_license, results='show'}
 coxph_license <- coxph(Surv(start_interval,
@@ -265,6 +235,7 @@ summary(coxph_license)
 vif(coxph_license)
 anova(coxph_license)
 ```
+
 
 ## Running Survival Models -- npm-version
 ```{r code block_npmVersion, results='show'}
@@ -287,6 +258,7 @@ summary(coxph_npm_version)
 #anova(coxph_npm_version)
 ```
 
+
 ## Running Survival Models -- npm-downloads
 ```{r code block_npmDownloads, results='show'}
 coxph_npm_downloads <- coxph(Surv(start_interval,
@@ -304,4 +276,165 @@ coxph_npm_downloads <- coxph(Surv(start_interval,
                        + log(desc+1)
                        , data=df_npm_downloads)
 summary(coxph_npm_downloads)
+```
+
+
+## Running Survival Models -- travis
+```{r code block_travis, results='show'}
+coxph_travis <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_travis)
+summary(coxph_travis)
+```
+
+
+## Running Survival Models -- circle
+```{r code block_circle, results='show'}
+coxph_circle <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_circle)
+summary(coxph_circle)
+```
+
+
+## Running Survival Models -- appveyor
+```{r code block_appveyor, results='show'}
+coxph_appveyor <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_appveyor)
+summary(coxph_appveyor)
+```
+
+## Running Survival Models -- codeship
+```{r code block_codeship, results='show'}
+coxph_codeship <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       #+ log(depsim+1)
+                       #+ log(desc+1)
+                       , data=df_codeship)
+summary(coxph_codeship)
+```
+
+
+## Running Survival Models -- coveralls
+```{r code block_coveralls, results='show'}
+coxph_coveralls <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_coveralls)
+summary(coxph_coveralls)
+```
+
+
+## Running Survival Models -- codeclimate
+```{r code block_codeclimate, results='show'}
+coxph_codeclimate <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       #+ log(desc+1)
+                       , data=df_codeclimate)
+summary(coxph_codeclimate)
+```
+
+
+## Running Survival Models -- codecov
+```{r code block_codecov, results='show'}
+coxph_codecov <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       + (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_codecov)
+summary(coxph_codecov)
+```
+
+
+## Running Survival Models -- codacy
+```{r code block_codacy, results='show'}
+coxph_codacy <- coxph(Surv(start_interval,
+                            end_interval,
+                            adopted == 1) ~
+                       + log(n_commits+1)
+                       + log(n_watchers+1)
+                       + (other_badge > 0)
+                       + log(all_popularity+1)
+                       #+ (comp_badge>0)
+                       + log(act_watchers+1)
+                       + log(act_undir_committers+1)
+                       + log(depgraph+1)
+                       + log(depsim+1)
+                       + log(desc+1)
+                       , data=df_codacy)
+summary(coxph_codacy)
+vif(coxph_codacy)
+anova(coxph_codacy)
 ```
