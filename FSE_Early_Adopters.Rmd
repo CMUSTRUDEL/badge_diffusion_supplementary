@@ -1,0 +1,31 @@
+---
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sqldf)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(zoo)
+library(car)
+```
+
+## FSE Early Adopters
+
+This is a supplementary markdown file for FSE Submission title "Heard it through the GitVine: An Empirical Study of Tool Diffusion Across the npm Ecosystem."
+
+```{r code block1}
+column <- "first_badge"
+badges <- read.csv("early-adopters.csv", stringsAsFactors=FALSE)
+  
+cutoff_date <- badges[ceiling(nrow(badges)*0.16),][column][1,]
+badges$early_badge_adopter <- badges[column] <= cutoff_date
+table(badges$early_badge_adopter)
+
+badge.fit.1 <- glm(early_badge_adopter ~ num_langs + num_followers + 
+ num_stars_gotten + num_commits + days_old, family="binomial", data=badges)
+vif(badge.fit.1)
+summary(badge.fit.1)
+```
